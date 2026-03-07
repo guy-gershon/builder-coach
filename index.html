@@ -186,6 +186,20 @@ body::after{content:'';position:fixed;inset:0;background-image:url("data:image/s
 ::-webkit-scrollbar{width:3px;}
 ::-webkit-scrollbar-track{background:transparent;}
 ::-webkit-scrollbar-thumb{background:var(--border2);border-radius:2px;}
+  /* HERO */
+.hero-card{text-align:center;padding:32px 24px 24px;}
+.hero-top{display:flex;justify-content:center;align-items:center;gap:16px;margin-bottom:16px;}
+.hero-level{font-family:'Syne',sans-serif;font-size:28px;font-weight:800;color:var(--accent);}
+.hero-streak{font-family:'IBM Plex Mono',monospace;font-size:13px;color:var(--accent3);background:rgba(251,146,60,0.1);border:1px solid rgba(251,146,60,0.2);padding:4px 12px;border-radius:20px;}
+.hero-xp-track{height:6px;background:var(--border2);border-radius:4px;overflow:hidden;margin:0 auto 10px;max-width:480px;}
+.hero-xp-fill{height:100%;background:linear-gradient(90deg,var(--accent),var(--accent2));border-radius:4px;transition:width 0.6s cubic-bezier(0.34,1.56,0.64,1);}
+.hero-xp-label{font-family:'IBM Plex Mono',monospace;font-size:11px;color:var(--muted2);}
+
+/* NEXT ACTION */
+.next-card{display:flex;align-items:center;gap:16px;padding:16px 20px;border-color:rgba(94,234,212,0.2);background:rgba(94,234,212,0.03);}
+.next-label{font-family:'IBM Plex Mono',monospace;font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:1.5px;white-space:nowrap;}
+.next-text{font-family:'Syne',sans-serif;font-weight:700;font-size:15px;flex:1;color:var(--text);}
+.next-xp{font-family:'IBM Plex Mono',monospace;font-size:13px;color:var(--accent);white-space:nowrap;}
 </style>
 </head>
 <body>
@@ -230,45 +244,65 @@ body::after{content:'';position:fixed;inset:0;background-image:url("data:image/s
     </div>
   </div>
 
-  <!-- DASHBOARD -->
-  <div class="panel active" id="panel-dashboard">
-    <div class="dashboard">
-      <div class="card">
-        <div class="card-accent" style="background:var(--accent)"></div>
-        <div class="card-label">Days Active</div>
-        <div class="card-val" style="color:var(--accent)" id="stat-days">1</div>
-        <div class="card-sub">Started today 🔥</div>
+ <!-- DASHBOARD -->
+<div class="panel active" id="panel-dashboard">
+  <div class="dashboard">
+
+    <!-- HERO -->
+    <div class="card span3 hero-card">
+      <div class="hero-top">
+        <div class="hero-level" id="xp-level-hero">Curious PM</div>
+        <div class="hero-streak">🔥 <span id="streak-hero">1</span> day streak</div>
       </div>
-      <div class="card">
-        <div class="card-accent" style="background:var(--accent2)"></div>
-        <div class="card-label">Concepts Learned</div>
-        <div class="card-val" style="color:var(--accent2)">3</div>
-        <div class="card-sub">HTML · Git · APIs</div>
+      <div class="hero-xp-track">
+        <div class="hero-xp-fill" id="hero-xp-fill" style="width:24%"></div>
       </div>
-      <div class="card">
-        <div class="card-accent" style="background:var(--accent3)"></div>
-        <div class="card-label">Apps Shipped</div>
-        <div class="card-val" style="color:var(--accent3)">1</div>
-        <div class="card-sub">Builder Coach ✓</div>
-      </div>
-      <div class="card span3">
-        <div class="section-hd">Skill Map</div>
-        <div class="skills-grid" id="skills-grid"></div>
-      </div>
-      <div class="card span2">
-        <div class="section-hd">Milestones</div>
-        <div class="ms-list" id="ms-list"></div>
-      </div>
-      <div class="card">
-        <div class="card-accent" style="background:var(--accent4)"></div>
-        <div class="card-label">Your PM Edge</div>
-        <div style="font-size:12px;line-height:1.9;color:var(--muted2);font-family:'IBM Plex Mono',monospace;margin-top:6px;">
-          <div style="color:var(--accent);margin-bottom:6px;">PM → Builder stack</div>
-          ✦ Systems thinking<br>✦ User empathy<br>✦ Ship discipline<br>✦ Working backwards<br>✦ AI-native mindset
-        </div>
+      <div class="hero-xp-label">
+        <span id="hero-xp-cur">420</span> / <span id="hero-xp-max">500</span> XP · Level <span id="hero-xp-lv">1</span> Builder
       </div>
     </div>
+
+    <!-- NEXT ACTION -->
+    <div class="card span3 next-card" id="next-milestone-card">
+      <div class="next-label">↳ Next milestone</div>
+      <div class="next-text" id="next-ms-text">Write your first CSS</div>
+      <div class="next-xp" id="next-ms-xp">+80 XP</div>
+    </div>
+
+    <!-- STATS ROW -->
+    <div class="card">
+      <div class="card-accent" style="background:var(--accent)"></div>
+      <div class="card-label">Days Active</div>
+      <div class="card-val" style="color:var(--accent)" id="stat-days">1</div>
+      <div class="card-sub">Started today 🔥</div>
+    </div>
+    <div class="card">
+      <div class="card-accent" style="background:var(--accent2)"></div>
+      <div class="card-label">Concepts Learned</div>
+      <div class="card-val" style="color:var(--accent2)">3</div>
+      <div class="card-sub">HTML · Git · APIs</div>
+    </div>
+    <div class="card">
+      <div class="card-accent" style="background:var(--accent3)"></div>
+      <div class="card-label">Apps Shipped</div>
+      <div class="card-val" style="color:var(--accent3)">1</div>
+      <div class="card-sub">Builder Coach ✓</div>
+    </div>
+
+    <!-- SKILL MAP -->
+    <div class="card span3">
+      <div class="section-hd">Skill Map</div>
+      <div class="skills-grid" id="skills-grid"></div>
+    </div>
+
+    <!-- MILESTONES -->
+    <div class="card span3">
+      <div class="section-hd">Milestones</div>
+      <div class="ms-list" id="ms-list"></div>
+    </div>
+
   </div>
+</div>
 
   <!-- DAILY BRIEF -->
   <div class="panel" id="panel-brief">
@@ -401,6 +435,12 @@ function renderXP(){
   document.getElementById('xp-level').textContent=info.name;
   document.getElementById('xp-lv').textContent=info.lv;
   document.getElementById('streak-num').textContent=state.streak;
+  document.getElementById('xp-level-hero').textContent = info.name;
+document.getElementById('hero-xp-fill').style.width = pct + '%';
+document.getElementById('hero-xp-cur').textContent = state.xp;
+document.getElementById('hero-xp-max').textContent = info.max;
+document.getElementById('hero-xp-lv').textContent = info.lv;
+document.getElementById('streak-hero').textContent = state.streak;
 }
 
 function toast(msg){
@@ -426,6 +466,11 @@ function renderMilestones(){
       <div class="ms-text">${m.text}</div>
       <div class="ms-xp">+${m.xp}</div>
     </div>`).join('');
+  const nextMs = state.milestones.find(m => !m.done);
+if (nextMs) {
+  document.getElementById('next-ms-text').textContent = nextMs.text;
+  document.getElementById('next-ms-xp').textContent = '+' + nextMs.xp + ' XP';
+}
 }
 
 function completeMilestone(id){
