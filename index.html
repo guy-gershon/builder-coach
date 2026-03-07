@@ -1,812 +1,648 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8" />
+<meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-<title>Builder Coach</title>
-<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@300;400;500&display=swap" rel="stylesheet"/>
+<title>Builder Coach — guy-gershon</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=IBM+Plex+Mono:wght@400;500;600&family=Fraunces:ital,wght@0,300;0,400;1,300&display=swap" rel="stylesheet"/>
 <style>
-  :root {
-    --bg: #0a0a0f;
-    --surface: #12121a;
-    --surface2: #1a1a26;
-    --border: #2a2a3d;
-    --accent: #6ee7b7;
-    --accent2: #818cf8;
-    --accent3: #fb923c;
-    --text: #e8e8f0;
-    --muted: #6b7280;
-    --danger: #f87171;
-  }
-  * { box-sizing: border-box; margin: 0; padding: 0; }
-  body {
-    font-family: 'IBM Plex Sans', sans-serif;
-    background: var(--bg);
-    color: var(--text);
-    min-height: 100vh;
-    overflow-x: hidden;
-  }
-  body::before {
-    content: '';
-    position: fixed;
-    top: -40%;
-    right: -20%;
-    width: 600px;
-    height: 600px;
-    background: radial-gradient(circle, rgba(110,231,183,0.06) 0%, transparent 70%);
-    pointer-events: none;
-    z-index: 0;
-  }
+:root {
+  --bg: #080810;
+  --surface: #0f0f1a;
+  --surface2: #161625;
+  --surface3: #1e1e30;
+  --border: #252538;
+  --border2: #2e2e48;
+  --accent: #5eead4;
+  --accent2: #a78bfa;
+  --accent3: #fb923c;
+  --accent4: #f472b6;
+  --text: #e2e2f0;
+  --muted: #64648a;
+  --muted2: #8888aa;
+}
+*{box-sizing:border-box;margin:0;padding:0;}
+html,body{height:100%;overflow:hidden;}
+body{font-family:'Fraunces',serif;background:var(--bg);color:var(--text);display:flex;flex-direction:column;}
+body::after{content:'';position:fixed;inset:0;background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.03'/%3E%3C/svg%3E");pointer-events:none;z-index:9999;opacity:0.4;}
+.glow-1{position:fixed;top:-200px;left:-100px;width:500px;height:500px;background:radial-gradient(circle,rgba(94,234,212,0.04) 0%,transparent 70%);pointer-events:none;}
+.glow-2{position:fixed;bottom:-150px;right:-100px;width:400px;height:400px;background:radial-gradient(circle,rgba(167,139,250,0.05) 0%,transparent 70%);pointer-events:none;}
+.app{display:flex;height:100vh;position:relative;z-index:1;}
 
-  /* LAYOUT */
-  .app { display: flex; height: 100vh; position: relative; z-index: 1; }
+/* SIDEBAR */
+.sidebar{width:220px;flex-shrink:0;background:var(--surface);border-right:1px solid var(--border);display:flex;flex-direction:column;}
+.logo{padding:20px 18px 16px;border-bottom:1px solid var(--border);}
+.logo-text{font-family:'Syne',sans-serif;font-weight:800;font-size:16px;letter-spacing:-0.5px;}
+.logo-text span{color:var(--accent);}
+.logo-sub{font-size:10px;color:var(--muted);font-family:'IBM Plex Mono',monospace;margin-top:3px;letter-spacing:1px;}
+.nav{padding:12px 10px;flex:1;}
+.nav-section{font-size:9px;color:var(--muted);font-family:'IBM Plex Mono',monospace;letter-spacing:2px;padding:10px 10px 4px;text-transform:uppercase;}
+.nav-item{display:flex;align-items:center;gap:9px;padding:9px 10px;border-radius:7px;cursor:pointer;font-size:13px;font-family:'IBM Plex Mono',monospace;color:var(--muted2);transition:all 0.15s;margin-bottom:1px;border:none;background:none;width:100%;text-align:left;}
+.nav-item:hover{background:var(--surface2);color:var(--text);}
+.nav-item.active{background:rgba(94,234,212,0.08);color:var(--accent);border:1px solid rgba(94,234,212,0.15);}
+.ni{font-size:13px;width:18px;text-align:center;}
+.xp-widget{padding:14px 16px;border-top:1px solid var(--border);}
+.xp-top{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:5px;}
+.xp-level{font-family:'Syne',sans-serif;font-size:12px;font-weight:700;color:var(--accent);}
+.xp-pts{font-family:'IBM Plex Mono',monospace;font-size:10px;color:var(--muted);}
+.xp-track{height:3px;background:var(--border2);border-radius:2px;overflow:hidden;margin-bottom:5px;}
+.xp-fill{height:100%;background:linear-gradient(90deg,var(--accent),var(--accent2));border-radius:2px;transition:width 0.6s cubic-bezier(0.34,1.56,0.64,1);}
+.xp-sub{font-size:10px;color:var(--muted);font-family:'IBM Plex Mono',monospace;}
+.streak{display:inline-flex;align-items:center;gap:4px;background:rgba(251,146,60,0.1);border:1px solid rgba(251,146,60,0.2);border-radius:20px;padding:2px 8px;font-size:10px;color:var(--accent3);font-family:'IBM Plex Mono',monospace;margin-top:6px;}
 
-  /* SIDEBAR */
-  .sidebar {
-    width: 240px;
-    flex-shrink: 0;
-    background: var(--surface);
-    border-right: 1px solid var(--border);
-    display: flex;
-    flex-direction: column;
-    padding: 24px 0;
-  }
-  .logo {
-    padding: 0 20px 24px;
-    border-bottom: 1px solid var(--border);
-    font-family: 'Syne', sans-serif;
-    font-weight: 800;
-    font-size: 18px;
-    letter-spacing: -0.5px;
-  }
-  .logo span { color: var(--accent); }
-  .nav { padding: 16px 12px; flex: 1; }
-  .nav-item {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    padding: 10px 12px;
-    border-radius: 8px;
-    cursor: pointer;
-    font-size: 14px;
-    color: var(--muted);
-    transition: all 0.15s;
-    margin-bottom: 2px;
-    border: none;
-    background: none;
-    width: 100%;
-    text-align: left;
-  }
-  .nav-item:hover { background: var(--surface2); color: var(--text); }
-  .nav-item.active { background: rgba(110,231,183,0.1); color: var(--accent); }
-  .nav-item .icon { font-size: 16px; width: 20px; text-align: center; }
-  .xp-bar {
-    padding: 16px 20px;
-    border-top: 1px solid var(--border);
-  }
-  .xp-label { font-size: 11px; color: var(--muted); font-family: 'IBM Plex Mono', monospace; margin-bottom: 6px; display: flex; justify-content: space-between; }
-  .xp-track { height: 4px; background: var(--border); border-radius: 2px; overflow: hidden; }
-  .xp-fill { height: 100%; background: linear-gradient(90deg, var(--accent), var(--accent2)); border-radius: 2px; transition: width 0.5s ease; }
+/* MAIN */
+.main{flex:1;display:flex;flex-direction:column;overflow:hidden;min-width:0;}
+.topbar{padding:12px 24px;border-bottom:1px solid var(--border);display:flex;align-items:center;flex-shrink:0;}
+.tab{padding:8px 16px;font-size:12px;font-family:'IBM Plex Mono',monospace;color:var(--muted);cursor:pointer;border-bottom:2px solid transparent;transition:all 0.15s;background:none;border-top:none;border-left:none;border-right:none;letter-spacing:0.5px;}
+.tab:hover{color:var(--text);}
+.tab.active{color:var(--accent);border-bottom-color:var(--accent);}
+.topbar-right{margin-left:auto;display:flex;align-items:center;gap:10px;}
+.pulse{width:7px;height:7px;border-radius:50%;background:var(--accent);box-shadow:0 0 8px var(--accent);animation:pulse 2s infinite;}
+@keyframes pulse{0%,100%{opacity:1;}50%{opacity:0.4;}}
+.date-badge{font-family:'IBM Plex Mono',monospace;font-size:10px;color:var(--muted);background:var(--surface2);padding:4px 10px;border-radius:20px;border:1px solid var(--border);}
+.panel{flex:1;overflow-y:auto;display:none;flex-direction:column;}
+.panel.active{display:flex;}
 
-  /* MAIN */
-  .main { flex: 1; display: flex; flex-direction: column; overflow: hidden; }
+/* DASHBOARD */
+.dashboard{padding:24px;display:grid;grid-template-columns:repeat(3,1fr);gap:14px;align-content:start;}
+.card{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:18px;position:relative;overflow:hidden;}
+.card-accent{position:absolute;top:0;left:0;right:0;height:2px;}
+.card-label{font-size:10px;color:var(--muted);font-family:'IBM Plex Mono',monospace;text-transform:uppercase;letter-spacing:1.5px;margin-bottom:8px;}
+.card-val{font-family:'Syne',sans-serif;font-size:34px;font-weight:800;line-height:1;}
+.card-sub{font-size:11px;color:var(--muted2);margin-top:5px;font-family:'IBM Plex Mono',monospace;}
+.span3{grid-column:span 3;}.span2{grid-column:span 2;}
+.section-hd{font-family:'Syne',sans-serif;font-weight:700;font-size:14px;margin-bottom:14px;display:flex;align-items:center;gap:8px;}
+.section-hd::after{content:'';flex:1;height:1px;background:var(--border);}
+.skills-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;}
+.sk{background:var(--surface2);border:1px solid var(--border);border-radius:8px;padding:11px 12px;}
+.sk-name{font-family:'IBM Plex Mono',monospace;font-size:10px;color:var(--muted2);margin-bottom:7px;text-transform:uppercase;letter-spacing:0.5px;}
+.sk-bar{height:3px;background:var(--border);border-radius:2px;overflow:hidden;margin-bottom:5px;}
+.sk-fill{height:100%;border-radius:2px;transition:width 0.8s ease;}
+.sk-lvl{font-size:10px;color:var(--muted);font-family:'IBM Plex Mono',monospace;}
+.ms-list{display:flex;flex-direction:column;gap:8px;}
+.ms{display:flex;align-items:center;gap:10px;padding:10px 12px;background:var(--surface2);border:1px solid var(--border);border-radius:8px;font-size:12px;cursor:pointer;transition:all 0.2s;}
+.ms:hover{border-color:var(--border2);}
+.ms.done{opacity:0.45;}
+.ms.active-ms{border-color:rgba(251,146,60,0.3);background:rgba(251,146,60,0.04);}
+.ms-check{width:20px;height:20px;border-radius:50%;border:2px solid var(--border2);display:flex;align-items:center;justify-content:center;font-size:10px;flex-shrink:0;}
+.ms.done .ms-check{background:var(--accent);border-color:var(--accent);color:#000;}
+.ms-text{flex:1;font-family:'IBM Plex Mono',monospace;}
+.ms-xp{font-family:'IBM Plex Mono',monospace;font-size:10px;color:var(--accent);}
 
-  /* TABS */
-  .tabs { display: flex; border-bottom: 1px solid var(--border); padding: 0 24px; gap: 0; }
-  .tab {
-    padding: 14px 20px;
-    font-size: 13px;
-    font-family: 'IBM Plex Mono', monospace;
-    color: var(--muted);
-    cursor: pointer;
-    border-bottom: 2px solid transparent;
-    transition: all 0.15s;
-    background: none;
-    border-top: none;
-    border-left: none;
-    border-right: none;
-  }
-  .tab:hover { color: var(--text); }
-  .tab.active { color: var(--accent); border-bottom-color: var(--accent); }
+/* DAILY BRIEF */
+.brief-panel{padding:24px;max-width:800px;}
+.brief-title{font-family:'Syne',sans-serif;font-weight:800;font-size:24px;margin-bottom:4px;}
+.brief-meta{font-size:12px;color:var(--muted);font-family:'IBM Plex Mono',monospace;margin-bottom:20px;}
+.brief-refresh{display:inline-flex;align-items:center;gap:8px;font-size:12px;color:var(--muted);font-family:'IBM Plex Mono',monospace;margin-bottom:18px;cursor:pointer;padding:6px 14px;border:1px solid var(--border);border-radius:6px;background:var(--surface);transition:all 0.15s;}
+.brief-refresh:hover{border-color:var(--accent);color:var(--accent);}
+.brief-card{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:20px;margin-bottom:12px;}
+.brief-tag{display:inline-flex;align-items:center;font-size:10px;font-family:'IBM Plex Mono',monospace;text-transform:uppercase;letter-spacing:1px;padding:3px 9px;border-radius:20px;margin-bottom:10px;}
+.tag-ai{background:rgba(94,234,212,0.1);color:var(--accent);border:1px solid rgba(94,234,212,0.2);}
+.tag-tools{background:rgba(167,139,250,0.1);color:var(--accent2);border:1px solid rgba(167,139,250,0.2);}
+.tag-build{background:rgba(251,146,60,0.1);color:var(--accent3);border:1px solid rgba(251,146,60,0.2);}
+.tag-pm{background:rgba(244,114,182,0.1);color:var(--accent4);border:1px solid rgba(244,114,182,0.2);}
+.brief-card-title{font-family:'Syne',sans-serif;font-weight:700;font-size:15px;margin-bottom:8px;}
+.brief-card-body{font-size:13px;color:var(--muted2);line-height:1.75;font-family:'IBM Plex Mono',monospace;}
+.brief-card-body strong{color:var(--text);}
+.brief-loading{text-align:center;padding:60px 20px;color:var(--muted);font-family:'IBM Plex Mono',monospace;font-size:13px;}
+.spin{display:inline-block;animation:spin 1s linear infinite;margin-right:8px;}
+@keyframes spin{to{transform:rotate(360deg);}}
 
-  /* PANELS */
-  .panel { flex: 1; overflow-y: auto; display: none; }
-  .panel.active { display: flex; flex-direction: column; }
+/* CHAT */
+.chat-wrap{flex:1;display:flex;flex-direction:column;overflow:hidden;}
+.chat-area{flex:1;overflow-y:auto;padding:20px 24px;display:flex;flex-direction:column;gap:14px;}
+.msg{display:flex;gap:10px;animation:fadeUp 0.2s ease;}
+.msg.user{flex-direction:row-reverse;align-self:flex-end;max-width:75%;}
+.msg.coach{max-width:75%;}
+@keyframes fadeUp{from{opacity:0;transform:translateY(6px);}to{opacity:1;transform:translateY(0);}}
+.avatar{width:30px;height:30px;border-radius:7px;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:11px;font-family:'Syne',sans-serif;font-weight:700;}
+.avatar.c{background:rgba(94,234,212,0.12);color:var(--accent);border:1px solid rgba(94,234,212,0.25);}
+.avatar.u{background:rgba(167,139,250,0.12);color:var(--accent2);border:1px solid rgba(167,139,250,0.25);}
+.bubble{background:var(--surface);border:1px solid var(--border);border-radius:11px;padding:13px 15px;font-size:13px;line-height:1.7;font-family:'IBM Plex Mono',monospace;}
+.msg.user .bubble{background:var(--surface2);border-color:rgba(167,139,250,0.2);}
+.bubble code{background:rgba(94,234,212,0.08);color:var(--accent);padding:1px 5px;border-radius:3px;font-size:12px;}
+.bubble pre{background:#050508;border:1px solid var(--border);border-radius:8px;padding:12px;margin:10px 0;overflow-x:auto;}
+.bubble pre code{background:none;padding:0;font-size:11px;color:var(--muted2);}
+.bubble strong{color:var(--text);font-weight:600;}
+.bubble em{color:var(--accent2);}
+.typing-dots{display:flex;gap:4px;padding:3px 0;}
+.typing-dots span{width:5px;height:5px;border-radius:50%;background:var(--muted);animation:td 1.2s infinite;}
+.typing-dots span:nth-child(2){animation-delay:0.2s;}
+.typing-dots span:nth-child(3){animation-delay:0.4s;}
+@keyframes td{0%,60%,100%{transform:translateY(0);}30%{transform:translateY(-5px);}}
+.chat-bottom{padding:12px 20px 18px;border-top:1px solid var(--border);flex-shrink:0;}
+.chips{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:10px;}
+.chip{font-size:11px;padding:4px 10px;border-radius:20px;border:1px solid var(--border);background:var(--surface2);color:var(--muted2);cursor:pointer;transition:all 0.15s;font-family:'IBM Plex Mono',monospace;}
+.chip:hover{border-color:var(--accent);color:var(--accent);}
+.input-row{display:flex;gap:8px;align-items:flex-end;}
+.chat-in{flex:1;background:var(--surface);border:1px solid var(--border);border-radius:9px;padding:11px 14px;color:var(--text);font-family:'IBM Plex Mono',monospace;font-size:13px;resize:none;outline:none;transition:border-color 0.15s;max-height:100px;line-height:1.5;}
+.chat-in:focus{border-color:rgba(94,234,212,0.4);}
+.send{width:38px;height:38px;background:var(--accent);border:none;border-radius:9px;cursor:pointer;display:flex;align-items:center;justify-content:center;color:#000;font-size:14px;font-weight:700;transition:opacity 0.15s;flex-shrink:0;}
+.send:hover{opacity:0.85;}
+.send:disabled{opacity:0.3;cursor:not-allowed;}
 
-  /* DASHBOARD */
-  .dashboard { padding: 28px; display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 16px; align-content: start; }
-  .stat-card {
-    background: var(--surface);
-    border: 1px solid var(--border);
-    border-radius: 12px;
-    padding: 20px;
-    position: relative;
-    overflow: hidden;
-  }
-  .stat-card::after {
-    content: '';
-    position: absolute;
-    top: 0; left: 0; right: 0;
-    height: 2px;
-  }
-  .stat-card.green::after { background: var(--accent); }
-  .stat-card.purple::after { background: var(--accent2); }
-  .stat-card.orange::after { background: var(--accent3); }
-  .stat-label { font-size: 11px; color: var(--muted); font-family: 'IBM Plex Mono', monospace; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 8px; }
-  .stat-value { font-family: 'Syne', sans-serif; font-size: 36px; font-weight: 800; line-height: 1; }
-  .stat-value.green { color: var(--accent); }
-  .stat-value.purple { color: var(--accent2); }
-  .stat-value.orange { color: var(--accent3); }
-  .stat-sub { font-size: 12px; color: var(--muted); margin-top: 6px; }
+/* CURRICULUM */
+.curriculum{padding:24px;max-width:860px;}
+.curr-title{font-family:'Syne',sans-serif;font-weight:800;font-size:22px;margin-bottom:4px;}
+.curr-sub{font-size:13px;color:var(--muted2);font-family:'IBM Plex Mono',monospace;margin-bottom:24px;}
+.phase{background:var(--surface);border:1px solid var(--border);border-radius:12px;margin-bottom:12px;overflow:hidden;}
+.phase-hd{padding:14px 18px;display:flex;align-items:center;gap:12px;border-bottom:1px solid var(--border);}
+.phase-icon{font-size:18px;}
+.phase-info{flex:1;}
+.phase-title{font-family:'Syne',sans-serif;font-weight:700;font-size:14px;}
+.phase-desc{font-size:11px;color:var(--muted);font-family:'IBM Plex Mono',monospace;margin-top:2px;}
+.phase-badge{font-size:10px;font-family:'IBM Plex Mono',monospace;padding:3px 9px;border-radius:20px;white-space:nowrap;}
+.pb-current{background:rgba(251,146,60,0.1);color:var(--accent3);border:1px solid rgba(251,146,60,0.3);}
+.pb-next{background:rgba(167,139,250,0.1);color:var(--accent2);border:1px solid rgba(167,139,250,0.2);}
+.pb-locked{background:rgba(100,100,138,0.1);color:var(--muted);border:1px solid var(--border);}
+.lessons{padding:8px 18px 12px;}
+.lesson{display:flex;align-items:center;gap:10px;padding:8px 0;border-bottom:1px solid var(--border);font-size:12px;font-family:'IBM Plex Mono',monospace;}
+.lesson:last-child{border:none;}
+.dot{width:7px;height:7px;border-radius:50%;background:var(--border2);flex-shrink:0;}
+.dot.done{background:var(--accent);}
+.dot.now{background:var(--accent3);box-shadow:0 0 0 3px rgba(251,146,60,0.15);}
+.lesson-name{flex:1;color:var(--muted2);}
+.lesson-name.done{color:var(--muted);text-decoration:line-through;}
+.lesson-name.now{color:var(--text);}
+.pm-tip{font-size:10px;color:var(--accent2);font-style:italic;}
 
-  .wide { grid-column: span 3; }
-  .half { grid-column: span 2; }
+/* PROJECTS */
+.projects{padding:24px;display:grid;grid-template-columns:repeat(3,1fr);gap:14px;align-content:start;}
+.proj{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:18px;transition:border-color 0.2s;}
+.proj-tag{display:inline-block;font-size:9px;font-family:'IBM Plex Mono',monospace;padding:2px 8px;border-radius:4px;margin-bottom:10px;text-transform:uppercase;letter-spacing:1px;}
+.pt-live{background:rgba(94,234,212,0.1);color:var(--accent);border:1px solid rgba(94,234,212,0.2);}
+.pt-planned{background:rgba(167,139,250,0.1);color:var(--accent2);border:1px solid rgba(167,139,250,0.2);}
+.proj-name{font-family:'Syne',sans-serif;font-weight:700;font-size:15px;margin-bottom:6px;}
+.proj-desc{font-size:11px;color:var(--muted2);line-height:1.6;font-family:'IBM Plex Mono',monospace;}
+.proj-url{font-size:10px;color:var(--accent);font-family:'IBM Plex Mono',monospace;margin-top:8px;display:block;text-decoration:none;}
+.proj-url:hover{text-decoration:underline;}
+.proj-add{border-style:dashed;display:flex;flex-direction:column;align-items:center;justify-content:center;cursor:pointer;min-height:140px;}
+.proj-add:hover{border-color:var(--accent);}
 
-  .section-title { font-family: 'Syne', sans-serif; font-weight: 700; font-size: 15px; margin-bottom: 16px; }
+/* TOAST */
+.xp-toast{position:fixed;bottom:24px;right:24px;background:var(--surface);border:1px solid rgba(94,234,212,0.4);border-radius:10px;padding:12px 18px;font-family:'IBM Plex Mono',monospace;font-size:12px;color:var(--accent);z-index:10000;transform:translateY(100px);opacity:0;transition:all 0.4s cubic-bezier(0.34,1.56,0.64,1);}
+.xp-toast.show{transform:translateY(0);opacity:1;}
 
-  /* SKILLS GRID */
-  .skills-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; }
-  .skill-chip {
-    background: var(--surface2);
-    border: 1px solid var(--border);
-    border-radius: 8px;
-    padding: 12px;
-    font-size: 12px;
-  }
-  .skill-chip .skill-name { font-family: 'IBM Plex Mono', monospace; margin-bottom: 6px; color: var(--text); font-size: 11px; }
-  .skill-progress { height: 3px; background: var(--border); border-radius: 2px; overflow: hidden; }
-  .skill-progress-fill { height: 100%; border-radius: 2px; }
-  .skill-chip .skill-lvl { font-size: 10px; color: var(--muted); margin-top: 4px; }
-
-  /* MILESTONES */
-  .milestone-list { display: flex; flex-direction: column; gap: 10px; }
-  .milestone {
-    display: flex;
-    align-items: center;
-    gap: 12px;
-    padding: 12px 14px;
-    background: var(--surface2);
-    border: 1px solid var(--border);
-    border-radius: 8px;
-    font-size: 13px;
-  }
-  .milestone.done { opacity: 0.5; }
-  .milestone .check {
-    width: 22px; height: 22px;
-    border-radius: 50%;
-    border: 2px solid var(--border);
-    display: flex; align-items: center; justify-content: center;
-    font-size: 11px;
-    flex-shrink: 0;
-  }
-  .milestone.done .check { background: var(--accent); border-color: var(--accent); color: #000; }
-  .milestone .ms-text { flex: 1; }
-  .milestone .ms-xp { font-family: 'IBM Plex Mono', monospace; font-size: 11px; color: var(--accent); }
-
-  /* PROJECTS */
-  .project-card {
-    background: var(--surface);
-    border: 1px solid var(--border);
-    border-radius: 12px;
-    padding: 20px;
-    grid-column: span 1;
-  }
-  .project-tag {
-    display: inline-block;
-    font-size: 10px;
-    font-family: 'IBM Plex Mono', monospace;
-    padding: 3px 8px;
-    border-radius: 4px;
-    margin-bottom: 10px;
-    text-transform: uppercase;
-    letter-spacing: 0.5px;
-  }
-  .tag-active { background: rgba(110,231,183,0.15); color: var(--accent); }
-  .tag-planned { background: rgba(129,140,248,0.15); color: var(--accent2); }
-  .tag-done { background: rgba(107,114,128,0.15); color: var(--muted); }
-  .project-name { font-family: 'Syne', sans-serif; font-weight: 700; font-size: 16px; margin-bottom: 6px; }
-  .project-desc { font-size: 12px; color: var(--muted); line-height: 1.5; }
-
-  /* CURRICULUM */
-  .curriculum { padding: 28px; }
-  .track {
-    background: var(--surface);
-    border: 1px solid var(--border);
-    border-radius: 12px;
-    margin-bottom: 16px;
-    overflow: hidden;
-  }
-  .track-header {
-    padding: 16px 20px;
-    display: flex;
-    align-items: center;
-    gap: 12px;
-    cursor: pointer;
-    border-bottom: 1px solid var(--border);
-  }
-  .track-icon { font-size: 20px; }
-  .track-title { font-family: 'Syne', sans-serif; font-weight: 700; font-size: 15px; }
-  .track-badge { margin-left: auto; font-size: 11px; font-family: 'IBM Plex Mono', monospace; }
-  .track-badge.beginner { color: var(--accent); }
-  .track-badge.intermediate { color: var(--accent2); }
-  .track-badge.advanced { color: var(--accent3); }
-  .track-lessons { padding: 12px 20px; }
-  .lesson {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    padding: 8px 0;
-    border-bottom: 1px solid var(--border);
-    font-size: 13px;
-    cursor: pointer;
-  }
-  .lesson:last-child { border-bottom: none; }
-  .lesson-dot {
-    width: 8px; height: 8px;
-    border-radius: 50%;
-    background: var(--border);
-    flex-shrink: 0;
-  }
-  .lesson-dot.done { background: var(--accent); }
-  .lesson-dot.current { background: var(--accent3); box-shadow: 0 0 0 3px rgba(251,146,60,0.2); }
-  .lesson-name { flex: 1; }
-  .lesson-name.done { color: var(--muted); text-decoration: line-through; }
-  .lesson-pm-note { font-size: 11px; color: var(--accent2); font-style: italic; }
-
-  /* CHAT */
-  .chat-area { flex: 1; overflow-y: auto; padding: 24px; display: flex; flex-direction: column; gap: 16px; }
-  .msg { display: flex; gap: 12px; max-width: 720px; }
-  .msg.user { flex-direction: row-reverse; align-self: flex-end; }
-  .msg-avatar {
-    width: 32px; height: 32px;
-    border-radius: 8px;
-    flex-shrink: 0;
-    display: flex; align-items: center; justify-content: center;
-    font-size: 14px;
-    font-family: 'Syne', sans-serif;
-    font-weight: 700;
-  }
-  .msg-avatar.coach { background: rgba(110,231,183,0.15); color: var(--accent); border: 1px solid rgba(110,231,183,0.3); }
-  .msg-avatar.user { background: rgba(129,140,248,0.15); color: var(--accent2); border: 1px solid rgba(129,140,248,0.3); }
-  .msg-bubble {
-    background: var(--surface);
-    border: 1px solid var(--border);
-    border-radius: 12px;
-    padding: 14px 16px;
-    font-size: 14px;
-    line-height: 1.65;
-    max-width: 580px;
-  }
-  .msg.user .msg-bubble { background: var(--surface2); }
-  .msg-bubble code {
-    font-family: 'IBM Plex Mono', monospace;
-    font-size: 12px;
-    background: rgba(110,231,183,0.1);
-    padding: 1px 5px;
-    border-radius: 3px;
-    color: var(--accent);
-  }
-  .msg-bubble pre {
-    background: #0d0d14;
-    border: 1px solid var(--border);
-    border-radius: 8px;
-    padding: 12px;
-    margin-top: 10px;
-    overflow-x: auto;
-  }
-  .msg-bubble pre code { background: none; padding: 0; font-size: 12px; }
-  .typing { display: flex; gap: 4px; align-items: center; padding: 4px 0; }
-  .typing span { width: 6px; height: 6px; border-radius: 50%; background: var(--muted); animation: bounce 1.2s infinite; }
-  .typing span:nth-child(2) { animation-delay: 0.2s; }
-  .typing span:nth-child(3) { animation-delay: 0.4s; }
-  @keyframes bounce { 0%,60%,100% { transform: translateY(0); } 30% { transform: translateY(-5px); } }
-
-  .chat-input-area {
-    padding: 16px 24px 24px;
-    border-top: 1px solid var(--border);
-  }
-  .chat-input-row { display: flex; gap: 10px; align-items: flex-end; }
-  .chat-input {
-    flex: 1;
-    background: var(--surface);
-    border: 1px solid var(--border);
-    border-radius: 10px;
-    padding: 12px 16px;
-    color: var(--text);
-    font-family: 'IBM Plex Sans', sans-serif;
-    font-size: 14px;
-    resize: none;
-    outline: none;
-    transition: border-color 0.15s;
-    max-height: 120px;
-    line-height: 1.5;
-  }
-  .chat-input:focus { border-color: var(--accent); }
-  .send-btn {
-    width: 42px; height: 42px;
-    background: var(--accent);
-    border: none;
-    border-radius: 10px;
-    cursor: pointer;
-    display: flex; align-items: center; justify-content: center;
-    color: #000;
-    font-size: 16px;
-    transition: opacity 0.15s;
-    flex-shrink: 0;
-  }
-  .send-btn:hover { opacity: 0.85; }
-  .send-btn:disabled { opacity: 0.4; cursor: not-allowed; }
-  .suggested-prompts { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 12px; }
-  .prompt-chip {
-    font-size: 12px;
-    padding: 5px 10px;
-    border-radius: 20px;
-    border: 1px solid var(--border);
-    background: var(--surface2);
-    color: var(--muted);
-    cursor: pointer;
-    transition: all 0.15s;
-    font-family: 'IBM Plex Mono', monospace;
-  }
-  .prompt-chip:hover { border-color: var(--accent); color: var(--accent); }
-
-  /* SCROLLBAR */
-  ::-webkit-scrollbar { width: 4px; }
-  ::-webkit-scrollbar-track { background: transparent; }
-  ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 2px; }
-
-  /* HEADER */
-  .top-header {
-    padding: 14px 24px;
-    border-bottom: 1px solid var(--border);
-    display: flex;
-    align-items: center;
-    gap: 12px;
-  }
-  .top-header h1 { font-family: 'Syne', sans-serif; font-size: 16px; font-weight: 700; }
-  .top-header .subtitle { font-size: 12px; color: var(--muted); }
-  .status-dot { width: 7px; height: 7px; border-radius: 50%; background: var(--accent); margin-left: auto; box-shadow: 0 0 6px var(--accent); }
-
-  @keyframes fadeIn { from { opacity:0; transform: translateY(8px); } to { opacity:1; transform: translateY(0); } }
-  .msg { animation: fadeIn 0.2s ease; }
+::-webkit-scrollbar{width:3px;}
+::-webkit-scrollbar-track{background:transparent;}
+::-webkit-scrollbar-thumb{background:var(--border2);border-radius:2px;}
 </style>
 </head>
 <body>
+<div class="glow-1"></div><div class="glow-2"></div>
+<div id="xp-toast" class="xp-toast"></div>
+
 <div class="app">
-  <!-- SIDEBAR -->
-  <aside class="sidebar">
-    <div class="logo">builder<span>.</span>coach</div>
-    <nav class="nav">
-      <button class="nav-item active" onclick="showTab('dashboard')">
-        <span class="icon">◈</span> Dashboard
-      </button>
-      <button class="nav-item" onclick="showTab('chat')">
-        <span class="icon">⌘</span> Coach Chat
-      </button>
-      <button class="nav-item" onclick="showTab('curriculum')">
-        <span class="icon">◎</span> Curriculum
-      </button>
-      <button class="nav-item" onclick="showTab('projects')">
-        <span class="icon">◻</span> Projects
-      </button>
-    </nav>
-    <div class="xp-bar">
-      <div class="xp-label">
-        <span>BUILDER XP</span>
-        <span id="xp-num">120 / 500</span>
-      </div>
-      <div class="xp-track">
-        <div class="xp-fill" id="xp-fill" style="width:24%"></div>
-      </div>
-      <div style="font-size:11px;color:var(--muted);margin-top:6px;">Level 1 — Curious PM</div>
+<aside class="sidebar">
+  <div class="logo">
+    <div class="logo-text">builder<span>.</span>coach</div>
+    <div class="logo-sub">guy-gershon</div>
+  </div>
+  <nav class="nav">
+    <div class="nav-section">Navigate</div>
+    <button class="nav-item active" onclick="showTab('dashboard')"><span class="ni">◈</span>Dashboard</button>
+    <button class="nav-item" onclick="showTab('brief')"><span class="ni">◎</span>Daily Brief</button>
+    <button class="nav-item" onclick="showTab('chat')"><span class="ni">⌘</span>Coach Chat</button>
+    <button class="nav-item" onclick="showTab('curriculum')"><span class="ni">▦</span>Curriculum</button>
+    <button class="nav-item" onclick="showTab('projects')"><span class="ni">◻</span>Projects</button>
+  </nav>
+  <div class="xp-widget">
+    <div class="xp-top">
+      <div class="xp-level" id="xp-level">Curious PM</div>
+      <div class="xp-pts"><span id="xp-cur">120</span> / <span id="xp-max">500</span></div>
     </div>
-  </aside>
+    <div class="xp-track"><div class="xp-fill" id="xp-fill" style="width:24%"></div></div>
+    <div class="xp-sub">Level <span id="xp-lv">1</span> Builder</div>
+    <div class="streak">🔥 <span id="streak-num">1</span> day streak</div>
+  </div>
+</aside>
 
-  <!-- MAIN -->
-  <main class="main">
-    <div class="tabs">
-      <button class="tab active" onclick="showTab('dashboard')">Overview</button>
-      <button class="tab" onclick="showTab('chat')">Coach</button>
-      <button class="tab" onclick="showTab('curriculum')">Curriculum</button>
-      <button class="tab" onclick="showTab('projects')">Projects</button>
+<main class="main">
+  <div class="topbar">
+    <button class="tab active" onclick="showTab('dashboard')">Overview</button>
+    <button class="tab" onclick="showTab('brief')">Daily Brief</button>
+    <button class="tab" onclick="showTab('chat')">Coach</button>
+    <button class="tab" onclick="showTab('curriculum')">Curriculum</button>
+    <button class="tab" onclick="showTab('projects')">Projects</button>
+    <div class="topbar-right">
+      <div class="date-badge" id="date-badge"></div>
+      <div class="pulse"></div>
     </div>
+  </div>
 
-    <!-- DASHBOARD PANEL -->
-    <div class="panel active" id="panel-dashboard">
-      <div class="dashboard">
-        <div class="stat-card green">
-          <div class="stat-label">Days Active</div>
-          <div class="stat-value green">1</div>
-          <div class="stat-sub">Started today 🔥</div>
-        </div>
-        <div class="stat-card purple">
-          <div class="stat-label">Concepts Learned</div>
-          <div class="stat-value purple">3</div>
-          <div class="stat-sub">HTML, Git basics, APIs</div>
-        </div>
-        <div class="stat-card orange">
-          <div class="stat-label">Apps Shipped</div>
-          <div class="stat-value orange">0</div>
-          <div class="stat-sub">First one coming soon</div>
-        </div>
-
-        <!-- SKILLS -->
-        <div class="stat-card wide">
-          <div class="section-title">Skill Progress</div>
-          <div class="skills-grid">
-            <div class="skill-chip">
-              <div class="skill-name">HTML/CSS</div>
-              <div class="skill-progress"><div class="skill-progress-fill" style="width:20%;background:var(--accent)"></div></div>
-              <div class="skill-lvl">Beginner</div>
-            </div>
-            <div class="skill-chip">
-              <div class="skill-name">JavaScript</div>
-              <div class="skill-progress"><div class="skill-progress-fill" style="width:5%;background:var(--accent2)"></div></div>
-              <div class="skill-lvl">Just starting</div>
-            </div>
-            <div class="skill-chip">
-              <div class="skill-name">React</div>
-              <div class="skill-progress"><div class="skill-progress-fill" style="width:2%;background:var(--accent2)"></div></div>
-              <div class="skill-lvl">Locked</div>
-            </div>
-            <div class="skill-chip">
-              <div class="skill-name">Git / GitHub</div>
-              <div class="skill-progress"><div class="skill-progress-fill" style="width:10%;background:var(--accent3)"></div></div>
-              <div class="skill-lvl">Beginner</div>
-            </div>
-            <div class="skill-chip">
-              <div class="skill-name">APIs / REST</div>
-              <div class="skill-progress"><div class="skill-progress-fill" style="width:15%;background:var(--accent3)"></div></div>
-              <div class="skill-lvl">Conceptual</div>
-            </div>
-            <div class="skill-chip">
-              <div class="skill-name">Deployment</div>
-              <div class="skill-progress"><div class="skill-progress-fill" style="width:0%;background:var(--accent)"></div></div>
-              <div class="skill-lvl">Locked</div>
-            </div>
-            <div class="skill-chip">
-              <div class="skill-name">Databases</div>
-              <div class="skill-progress"><div class="skill-progress-fill" style="width:0%;background:var(--accent2)"></div></div>
-              <div class="skill-lvl">Locked</div>
-            </div>
-            <div class="skill-chip">
-              <div class="skill-name">AI / LLMs</div>
-              <div class="skill-progress"><div class="skill-progress-fill" style="width:30%;background:var(--accent)"></div></div>
-              <div class="skill-lvl">PM advantage ✦</div>
-            </div>
-          </div>
-        </div>
-
-        <!-- MILESTONES -->
-        <div class="stat-card half">
-          <div class="section-title">Milestones</div>
-          <div class="milestone-list">
-            <div class="milestone done">
-              <div class="check">✓</div>
-              <div class="ms-text">Set up Builder Coach</div>
-              <div class="ms-xp">+50 XP</div>
-            </div>
-            <div class="milestone done">
-              <div class="check">✓</div>
-              <div class="ms-text">Describe your first app idea</div>
-              <div class="ms-xp">+70 XP</div>
-            </div>
-            <div class="milestone">
-              <div class="check"></div>
-              <div class="ms-text">Create a GitHub repo</div>
-              <div class="ms-xp">+100 XP</div>
-            </div>
-            <div class="milestone">
-              <div class="check"></div>
-              <div class="ms-text">Deploy your first app to Vercel</div>
-              <div class="ms-xp">+200 XP</div>
-            </div>
-            <div class="milestone">
-              <div class="check"></div>
-              <div class="ms-text">Ship something users can use</div>
-              <div class="ms-xp">+500 XP</div>
-            </div>
-          </div>
-        </div>
-
-        <!-- PM SUPERPOWER -->
-        <div class="stat-card">
-          <div class="stat-label">Your PM Superpower</div>
-          <div style="font-size:13px;line-height:1.6;color:var(--text);margin-top:8px;">
-            You already know how to <strong style="color:var(--accent)">define problems</strong>, 
-            write <strong style="color:var(--accent2)">specs</strong>, and think in 
-            <strong style="color:var(--accent3)">user flows</strong>. 
-            Most devs lack this. Use it.
-          </div>
+  <!-- DASHBOARD -->
+  <div class="panel active" id="panel-dashboard">
+    <div class="dashboard">
+      <div class="card">
+        <div class="card-accent" style="background:var(--accent)"></div>
+        <div class="card-label">Days Active</div>
+        <div class="card-val" style="color:var(--accent)" id="stat-days">1</div>
+        <div class="card-sub">Started today 🔥</div>
+      </div>
+      <div class="card">
+        <div class="card-accent" style="background:var(--accent2)"></div>
+        <div class="card-label">Concepts Learned</div>
+        <div class="card-val" style="color:var(--accent2)">3</div>
+        <div class="card-sub">HTML · Git · APIs</div>
+      </div>
+      <div class="card">
+        <div class="card-accent" style="background:var(--accent3)"></div>
+        <div class="card-label">Apps Shipped</div>
+        <div class="card-val" style="color:var(--accent3)">1</div>
+        <div class="card-sub">Builder Coach ✓</div>
+      </div>
+      <div class="card span3">
+        <div class="section-hd">Skill Map</div>
+        <div class="skills-grid" id="skills-grid"></div>
+      </div>
+      <div class="card span2">
+        <div class="section-hd">Milestones</div>
+        <div class="ms-list" id="ms-list"></div>
+      </div>
+      <div class="card">
+        <div class="card-accent" style="background:var(--accent4)"></div>
+        <div class="card-label">Your PM Edge</div>
+        <div style="font-size:12px;line-height:1.9;color:var(--muted2);font-family:'IBM Plex Mono',monospace;margin-top:6px;">
+          <div style="color:var(--accent);margin-bottom:6px;">PM → Builder stack</div>
+          ✦ Systems thinking<br>✦ User empathy<br>✦ Ship discipline<br>✦ Working backwards<br>✦ AI-native mindset
         </div>
       </div>
     </div>
+  </div>
 
-    <!-- CHAT PANEL -->
-    <div class="panel" id="panel-chat">
-      <div class="top-header">
-        <div>
-          <h1>Builder Coach</h1>
-          <div class="subtitle">Your personal technical mentor</div>
-        </div>
-        <div class="status-dot"></div>
+  <!-- DAILY BRIEF -->
+  <div class="panel" id="panel-brief">
+    <div class="brief-panel">
+      <div class="brief-title">Daily Brief</div>
+      <div class="brief-meta" id="brief-date"></div>
+      <div class="brief-refresh" onclick="loadBrief()">↺ &nbsp;Refresh Brief</div>
+      <div id="brief-content">
+        <div class="brief-loading"><span class="spin">⟳</span> Loading today's signal...</div>
       </div>
+    </div>
+  </div>
+
+  <!-- CHAT -->
+  <div class="panel" id="panel-chat">
+    <div class="chat-wrap">
       <div class="chat-area" id="chat-area">
-        <div class="msg">
-          <div class="msg-avatar coach">BC</div>
-          <div class="msg-bubble">
-            Welcome, Principal PMT. 👋<br><br>
-            I know your background — you've shipped products at Amazon, you think in customer needs and working backwards docs, and you're used to aligning 10 people before writing a line of code.<br><br>
-            Now we're flipping that. <strong>You're going to write the code.</strong><br><br>
-            Here's the deal: your PM skills are a genuine superpower most engineers don't have. You know what to build and why. I'm going to help you learn the <em>how</em>. We'll move fast, skip the boring stuff, and always connect concepts to things you already understand.<br><br>
-            What's the first thing you want to build — or what's your first question?
-          </div>
+        <div class="msg coach">
+          <div class="avatar c">BC</div>
+          <div class="bubble">Welcome back, Guy. 👋<br><br>You've already shipped your first app and set up GitHub. Your XP and progress are saved between sessions now.<br><br>Check the <strong>Daily Brief</strong> tab for what's worth knowing today. Or tell me — what are we building or learning?</div>
         </div>
       </div>
-      <div class="chat-input-area">
-        <div class="suggested-prompts" id="suggested-prompts">
-          <div class="prompt-chip" onclick="sendPrompt(this)">How does a web app actually work?</div>
-          <div class="prompt-chip" onclick="sendPrompt(this)">Explain Git like I'm a PM</div>
-          <div class="prompt-chip" onclick="sendPrompt(this)">What should I build first?</div>
-          <div class="prompt-chip" onclick="sendPrompt(this)">What is HTML vs CSS vs JS?</div>
-          <div class="prompt-chip" onclick="sendPrompt(this)">How do I set up GitHub?</div>
+      <div class="chat-bottom">
+        <div class="chips" id="chips">
+          <div class="chip" onclick="useChip(this)">What should I learn next?</div>
+          <div class="chip" onclick="useChip(this)">Explain React to a PM</div>
+          <div class="chip" onclick="useChip(this)">What's new in AI this week?</div>
+          <div class="chip" onclick="useChip(this)">Help me understand CSS</div>
+          <div class="chip" onclick="useChip(this)">What should I build next?</div>
         </div>
-        <div class="chat-input-row">
-          <textarea class="chat-input" id="chat-input" rows="1" placeholder="Ask your coach anything..." onkeydown="handleKey(event)" oninput="autoResize(this)"></textarea>
-          <button class="send-btn" id="send-btn" onclick="sendMessage()">↑</button>
+        <div class="input-row">
+          <textarea class="chat-in" id="chat-in" rows="1" placeholder="Ask your coach..." onkeydown="handleKey(event)" oninput="autoResize(this)"></textarea>
+          <button class="send" id="send-btn" onclick="sendMsg()">↑</button>
         </div>
       </div>
     </div>
+  </div>
 
-    <!-- CURRICULUM PANEL -->
-    <div class="panel" id="panel-curriculum">
-      <div class="curriculum">
-        <div style="margin-bottom:24px;">
-          <div style="font-family:'Syne',sans-serif;font-weight:800;font-size:22px;margin-bottom:6px;">Your Learning Path</div>
-          <div style="font-size:13px;color:var(--muted);">Designed for PMs who build. Skips the fluff, doubles down on shipping.</div>
-        </div>
+  <!-- CURRICULUM -->
+  <div class="panel" id="panel-curriculum">
+    <div class="curriculum">
+      <div class="curr-title">Your Learning Path</div>
+      <div class="curr-sub">Built for PMs who ship. Updated as the landscape evolves.</div>
+      <div id="curriculum-content"></div>
+    </div>
+  </div>
 
-        <div class="track">
-          <div class="track-header">
-            <span class="track-icon">🏗️</span>
-            <div>
-              <div class="track-title">Phase 1: How the Web Works</div>
-              <div style="font-size:12px;color:var(--muted);">The mental model every builder needs</div>
-            </div>
-            <div class="track-badge beginner">CURRENT</div>
-          </div>
-          <div class="track-lessons">
-            <div class="lesson"><div class="lesson-dot done"></div><div class="lesson-name done">What is a web app? (Frontend vs Backend)</div><div class="lesson-pm-note">Like client vs server-side in your PRDs</div></div>
-            <div class="lesson"><div class="lesson-dot done"></div><div class="lesson-name done">HTML — the skeleton of every page</div><div class="lesson-pm-note">Think of it as your information architecture</div></div>
-            <div class="lesson"><div class="lesson-dot current"></div><div class="lesson-name">CSS — styling and layout</div><div class="lesson-pm-note">Visual design spec, but in code</div></div>
-            <div class="lesson"><div class="lesson-dot"></div><div class="lesson-name">JavaScript — making things interactive</div><div class="lesson-pm-note">Business logic layer</div></div>
-            <div class="lesson"><div class="lesson-dot"></div><div class="lesson-name">How browsers render pages</div></div>
-          </div>
-        </div>
-
-        <div class="track">
-          <div class="track-header">
-            <span class="track-icon">🛠️</span>
-            <div>
-              <div class="track-title">Phase 2: Developer Tools & Git</div>
-              <div style="font-size:12px;color:var(--muted);">Your workbench and version control</div>
-            </div>
-            <div class="track-badge beginner">UP NEXT</div>
-          </div>
-          <div class="track-lessons">
-            <div class="lesson"><div class="lesson-dot"></div><div class="lesson-name">Terminal basics (you'll use this every day)</div></div>
-            <div class="lesson"><div class="lesson-dot"></div><div class="lesson-name">Git: saving and tracking your work</div><div class="lesson-pm-note">Like version history in Docs — but for code</div></div>
-            <div class="lesson"><div class="lesson-dot"></div><div class="lesson-name">GitHub: your public portfolio</div></div>
-            <div class="lesson"><div class="lesson-dot"></div><div class="lesson-name">VS Code setup for builders</div></div>
-          </div>
-        </div>
-
-        <div class="track">
-          <div class="track-header">
-            <span class="track-icon">⚡</span>
-            <div>
-              <div class="track-title">Phase 3: Build & Ship Your First App</div>
-              <div style="font-size:12px;color:var(--muted);">From zero to live URL</div>
-            </div>
-            <div class="track-badge intermediate">PHASE 3</div>
-          </div>
-          <div class="track-lessons">
-            <div class="lesson"><div class="lesson-dot"></div><div class="lesson-name">React fundamentals (components, state, props)</div><div class="lesson-pm-note">Think reusable UI modules in your design system</div></div>
-            <div class="lesson"><div class="lesson-dot"></div><div class="lesson-name">Build a simple app from scratch</div></div>
-            <div class="lesson"><div class="lesson-dot"></div><div class="lesson-name">Deploy to Vercel in 5 minutes</div></div>
-            <div class="lesson"><div class="lesson-dot"></div><div class="lesson-name">Add a custom domain</div></div>
-          </div>
-        </div>
-
-        <div class="track">
-          <div class="track-header">
-            <span class="track-icon">🔌</span>
-            <div>
-              <div class="track-title">Phase 4: APIs & Data</div>
-              <div style="font-size:12px;color:var(--muted);">Connect your app to the world</div>
-            </div>
-            <div class="track-badge intermediate">PHASE 4</div>
-          </div>
-          <div class="track-lessons">
-            <div class="lesson"><div class="lesson-dot"></div><div class="lesson-name">What is an API? (REST, JSON)</div><div class="lesson-pm-note">Like the integration spec in your PRD</div></div>
-            <div class="lesson"><div class="lesson-dot"></div><div class="lesson-name">Calling the Claude API from your app</div></div>
-            <div class="lesson"><div class="lesson-dot"></div><div class="lesson-name">Basic databases (Supabase)</div></div>
-            <div class="lesson"><div class="lesson-dot"></div><div class="lesson-name">User authentication</div></div>
-          </div>
-        </div>
-
-        <div class="track">
-          <div class="track-header">
-            <span class="track-icon">🚀</span>
-            <div>
-              <div class="track-title">Phase 5: AI-Powered Products</div>
-              <div style="font-size:12px;color:var(--muted);">Where your PM instincts shine</div>
-            </div>
-            <div class="track-badge advanced">ADVANCED</div>
-          </div>
-          <div class="track-lessons">
-            <div class="lesson"><div class="lesson-dot"></div><div class="lesson-name">Prompt engineering for products</div></div>
-            <div class="lesson"><div class="lesson-dot"></div><div class="lesson-name">Building AI-first features</div></div>
-            <div class="lesson"><div class="lesson-dot"></div><div class="lesson-name">Shipping your first AI product</div></div>
-          </div>
-        </div>
+  <!-- PROJECTS -->
+  <div class="panel" id="panel-projects">
+    <div class="projects">
+      <div class="card span3">
+        <div class="section-hd">Build Log</div>
+        <div style="font-size:11px;color:var(--muted2);font-family:'IBM Plex Mono',monospace;">Every app you build. This becomes your portfolio.</div>
+      </div>
+      <div class="proj">
+        <div class="proj-tag pt-live">LIVE</div>
+        <div class="proj-name">Builder Coach</div>
+        <div class="proj-desc">Your AI-powered learning agent. The first thing you shipped. Meta as it gets.</div>
+        <a class="proj-url" href="https://builder-coach.vercel.app" target="_blank">↗ View live</a>
+      </div>
+      <div class="proj">
+        <div class="proj-tag pt-planned">PLANNED</div>
+        <div class="proj-name">App #2</div>
+        <div class="proj-desc">Tell your coach what you want to build. It'll show up here with a full plan.</div>
+      </div>
+      <div class="proj proj-add" onclick="showTab('chat')">
+        <div style="font-size:24px;color:var(--border2);margin-bottom:8px;">+</div>
+        <div style="font-size:11px;color:var(--muted);font-family:'IBM Plex Mono',monospace;">Add a project</div>
       </div>
     </div>
-
-    <!-- PROJECTS PANEL -->
-    <div class="panel" id="panel-projects">
-      <div class="dashboard">
-        <div class="stat-card wide">
-          <div class="section-title">Your Build Log</div>
-          <div style="font-size:13px;color:var(--muted);">Every app you build gets logged here. This becomes your portfolio.</div>
-        </div>
-        <div class="project-card">
-          <div class="project-tag tag-active">ACTIVE</div>
-          <div class="project-name">Builder Coach</div>
-          <div class="project-desc">The app you're looking at right now. Your first shipped HTML app. Welcome to the other side.</div>
-        </div>
-        <div class="project-card">
-          <div class="project-tag tag-planned">PLANNED</div>
-          <div class="project-name">App #2</div>
-          <div class="project-desc">Tell your coach what you want to build next. It'll appear here with a full plan.</div>
-        </div>
-        <div class="project-card" style="display:flex;flex-direction:column;align-items:center;justify-content:center;border-style:dashed;cursor:pointer;" onclick="showTab('chat')">
-          <div style="font-size:28px;margin-bottom:8px;color:var(--border)">+</div>
-          <div style="font-size:13px;color:var(--muted)">Add a project idea</div>
-          <div style="font-size:11px;color:var(--muted);margin-top:4px;">Chat with your coach</div>
-        </div>
-      </div>
-    </div>
-  </main>
+  </div>
+</main>
 </div>
 
 <script>
-const SYSTEM_PROMPT = `You are "Builder Coach" — a sharp, encouraging technical mentor for a Principal PMT from Amazon who wants to become a software builder. 
+// ── STATE (localStorage) ──────────────────────────────────────────
+const DEFAULT = {
+  xp: 120, streak: 1, lastVisit: new Date().toDateString(),
+  milestones: [
+    {id:'setup',text:'Set up Builder Coach',xp:50,done:true},
+    {id:'idea',text:'Describe your first app idea',xp:70,done:true},
+    {id:'github',text:'Create a GitHub repo',xp:100,done:true},
+    {id:'deploy',text:'Deploy first app to Vercel',xp:200,done:true},
+    {id:'css',text:'Write your first CSS',xp:80,done:false},
+    {id:'js',text:'Write your first JavaScript',xp:100,done:false},
+    {id:'react',text:'Build a React component',xp:150,done:false},
+    {id:'api',text:'Call an external API',xp:200,done:false},
+    {id:'users',text:'Ship something real users use',xp:500,done:false},
+  ],
+  skills:[
+    {name:'HTML/CSS',pct:20,color:'var(--accent)',lvl:'Beginner'},
+    {name:'JavaScript',pct:5,color:'var(--accent2)',lvl:'Just starting'},
+    {name:'React',pct:2,color:'var(--accent2)',lvl:'Unlocking'},
+    {name:'Git/GitHub',pct:25,color:'var(--accent3)',lvl:'Beginner'},
+    {name:'APIs/REST',pct:15,color:'var(--accent3)',lvl:'Conceptual'},
+    {name:'Deployment',pct:30,color:'var(--accent)',lvl:'Vercel ✓'},
+    {name:'Databases',pct:0,color:'var(--accent2)',lvl:'Locked'},
+    {name:'AI/LLMs',pct:35,color:'var(--accent4)',lvl:'PM edge ✦'},
+  ]
+};
 
-Your student has deep product management expertise (Amazon Principal PMT level) but limited coding knowledge. They understand systems thinking, user needs, metrics, working backwards, and how to ship products. They are NOT a beginner at product — only at code.
+function loadState(){try{const s=localStorage.getItem('bc2');if(s)return{...DEFAULT,...JSON.parse(s)};}catch(e){}return{...DEFAULT};}
+function saveState(){try{localStorage.setItem('bc2',JSON.stringify(state));}catch(e){}}
+let state=loadState();
 
-Your teaching style:
-- Always connect new coding concepts to PM concepts they already know (e.g. "Git is like version history in Google Docs")
-- Be direct and skip unnecessary theory — they learn by building
-- Celebrate their PM instincts as genuine advantages
-- When explaining code, show small working examples
-- Suggest what to build next based on what they've learned
-- Track their progress mentally and reference it in conversation
-- Be concise but never shallow
-- Use occasional dry humor — they're a senior professional, not a student
-
-Current learning status: Phase 1 (How the Web Works). Has touched HTML basics, understands what frontend/backend means conceptually, just starting CSS.
-
-Always format code with proper backticks. Keep responses focused and action-oriented.`;
-
-let messages = [];
-let isLoading = false;
-
-function showTab(tab) {
-  document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
-  document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
-  document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
-
-  document.getElementById('panel-' + tab).classList.add('active');
-  const tabs = ['dashboard','chat','curriculum','projects'];
-  document.querySelectorAll('.tab')[tabs.indexOf(tab)]?.classList.add('active');
-  document.querySelectorAll('.nav-item')[tabs.indexOf(tab)]?.classList.add('active');
+// Streak
+const today=new Date().toDateString();
+if(state.lastVisit!==today){
+  const diff=(new Date(today)-new Date(state.lastVisit))/86400000;
+  state.streak=diff<=1.5?(state.streak||0)+1:1;
+  state.lastVisit=today;saveState();
 }
 
-function autoResize(el) {
-  el.style.height = 'auto';
-  el.style.height = Math.min(el.scrollHeight, 120) + 'px';
+// ── XP LEVELS ──────────────────────────────────────────────────────
+const LEVELS=[
+  {min:0,max:500,name:'Curious PM',lv:1},
+  {min:500,max:1200,name:'Code-Curious',lv:2},
+  {min:1200,max:2500,name:'Junior Builder',lv:3},
+  {min:2500,max:5000,name:'Builder',lv:4},
+  {min:5000,max:99999,name:'Power Builder',lv:5},
+];
+function lvlInfo(xp){return LEVELS.find(l=>xp>=l.min&&xp<l.max)||LEVELS[4];}
+
+function renderXP(){
+  const info=lvlInfo(state.xp);
+  const pct=((state.xp-info.min)/(info.max-info.min)*100).toFixed(1);
+  document.getElementById('xp-fill').style.width=pct+'%';
+  document.getElementById('xp-cur').textContent=state.xp;
+  document.getElementById('xp-max').textContent=info.max;
+  document.getElementById('xp-level').textContent=info.name;
+  document.getElementById('xp-lv').textContent=info.lv;
+  document.getElementById('streak-num').textContent=state.streak;
 }
 
-function handleKey(e) {
-  if (e.key === 'Enter' && !e.shiftKey) {
-    e.preventDefault();
-    sendMessage();
-  }
+function toast(msg){
+  const t=document.getElementById('xp-toast');
+  t.textContent=msg;t.classList.add('show');
+  setTimeout(()=>t.classList.remove('show'),3000);
 }
 
-function sendPrompt(el) {
-  const text = el.textContent;
-  document.getElementById('chat-input').value = text;
-  document.getElementById('suggested-prompts').style.display = 'none';
-  sendMessage();
+function renderSkills(){
+  document.getElementById('skills-grid').innerHTML=state.skills.map(s=>`
+    <div class="sk">
+      <div class="sk-name">${s.name}</div>
+      <div class="sk-bar"><div class="sk-fill" style="width:${s.pct}%;background:${s.color}"></div></div>
+      <div class="sk-lvl">${s.lvl}</div>
+    </div>`).join('');
 }
 
-function addMessage(role, content) {
-  const area = document.getElementById('chat-area');
-  const div = document.createElement('div');
-  div.className = 'msg ' + (role === 'user' ? 'user' : '');
-  const avatar = role === 'user' ? '<div class="msg-avatar user">PM</div>' : '<div class="msg-avatar coach">BC</div>';
-  
-  // Format content: code blocks
-  let formatted = content
-    .replace(/```(\w*)\n?([\s\S]*?)```/g, '<pre><code>$2</code></pre>')
-    .replace(/`([^`]+)`/g, '<code>$1</code>')
-    .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
-    .replace(/\*(.*?)\*/g, '<em>$1</em>')
-    .replace(/\n/g, '<br>');
-
-  div.innerHTML = avatar + `<div class="msg-bubble">${formatted}</div>`;
-  area.appendChild(div);
-  area.scrollTop = area.scrollHeight;
+function renderMilestones(){
+  const next=state.milestones.find(m=>!m.done);
+  document.getElementById('ms-list').innerHTML=state.milestones.map(m=>`
+    <div class="ms ${m.done?'done':''} ${m.id===next?.id?'active-ms':''}" onclick="completeMilestone('${m.id}')">
+      <div class="ms-check">${m.done?'✓':''}</div>
+      <div class="ms-text">${m.text}</div>
+      <div class="ms-xp">+${m.xp}</div>
+    </div>`).join('');
 }
 
-function showTyping() {
-  const area = document.getElementById('chat-area');
-  const div = document.createElement('div');
-  div.className = 'msg';
-  div.id = 'typing-indicator';
-  div.innerHTML = '<div class="msg-avatar coach">BC</div><div class="msg-bubble"><div class="typing"><span></span><span></span><span></span></div></div>';
-  area.appendChild(div);
-  area.scrollTop = area.scrollHeight;
+function completeMilestone(id){
+  const m=state.milestones.find(x=>x.id===id);
+  if(!m||m.done)return;
+  m.done=true;state.xp+=m.xp;saveState();renderXP();renderMilestones();
+  toast(`✓ ${m.text} — +${m.xp} XP`);
 }
 
-function removeTyping() {
-  const el = document.getElementById('typing-indicator');
-  if (el) el.remove();
+// ── CURRICULUM ──────────────────────────────────────────────────────
+const PHASES=[
+  {icon:'🏗️',title:'Phase 1: How the Web Works',desc:'The mental model every builder needs',badge:'pb-current',badgeText:'CURRENT',
+   lessons:[
+    {n:'Frontend vs Backend — the full picture',s:'done',t:'Like client vs server in your PRDs'},
+    {n:'HTML — structure and semantics',s:'done',t:'Your information architecture'},
+    {n:'CSS — styling and layout',s:'now',t:'Visual spec, but executable'},
+    {n:'JavaScript — logic and interaction',s:'',t:'The business logic layer'},
+    {n:'How browsers render pages',s:'',t:''},
+  ]},
+  {icon:'🛠️',title:'Phase 2: Developer Tools & Git',desc:'Your workbench',badge:'pb-next',badgeText:'UP NEXT',
+   lessons:[
+    {n:'Terminal basics',s:'',t:'You\'ll use this every day'},
+    {n:'Git — saving and tracking your work',s:'',t:'Version history for code'},
+    {n:'GitHub — your public portfolio',s:'',t:'Already set up ✓'},
+    {n:'VS Code setup for builders',s:'',t:''},
+  ]},
+  {icon:'⚡',title:'Phase 3: Build & Ship Your First React App',desc:'From zero to live URL',badge:'pb-locked',badgeText:'PHASE 3',
+   lessons:[
+    {n:'React fundamentals (components, state, props)',s:'',t:'Reusable UI modules'},
+    {n:'Build a real app from scratch',s:'',t:''},
+    {n:'Deploy to Vercel',s:'',t:'Already done ✓'},
+    {n:'Custom domain',s:'',t:''},
+  ]},
+  {icon:'🔌',title:'Phase 4: APIs, Data & Auth',desc:'Connect your app to the world',badge:'pb-locked',badgeText:'PHASE 4',
+   lessons:[
+    {n:'What is an API? (REST, JSON)',s:'',t:'The integration spec in your PRD'},
+    {n:'Calling the Claude API',s:'',t:''},
+    {n:'Databases with Supabase',s:'',t:''},
+    {n:'User authentication',s:'',t:''},
+  ]},
+  {icon:'🚀',title:'Phase 5: AI-Powered Products',desc:'Where your PM instincts become a superpower',badge:'pb-locked',badgeText:'ADVANCED',
+   lessons:[
+    {n:'Prompt engineering for products',s:'',t:''},
+    {n:'Building AI-first features',s:'',t:''},
+    {n:'Agentic workflows',s:'',t:'The frontier right now'},
+    {n:'Ship your first AI product to real users',s:'',t:''},
+  ]},
+];
+
+function renderCurriculum(){
+  document.getElementById('curriculum-content').innerHTML=PHASES.map(p=>`
+    <div class="phase">
+      <div class="phase-hd">
+        <span class="phase-icon">${p.icon}</span>
+        <div class="phase-info">
+          <div class="phase-title">${p.title}</div>
+          <div class="phase-desc">${p.desc}</div>
+        </div>
+        <div class="phase-badge ${p.badge}">${p.badgeText}</div>
+      </div>
+      <div class="lessons">
+        ${p.lessons.map(l=>`
+          <div class="lesson">
+            <div class="dot ${l.s}"></div>
+            <div class="lesson-name ${l.s}">${l.n}</div>
+            ${l.t?`<div class="pm-tip">${l.t}</div>`:''}
+          </div>`).join('')}
+      </div>
+    </div>`).join('');
 }
 
-async function sendMessage() {
-  const input = document.getElementById('chat-input');
-  const text = input.value.trim();
-  if (!text || isLoading) return;
+// ── DAILY BRIEF ──────────────────────────────────────────────────────
+let briefLoaded=false;
 
-  input.value = '';
-  input.style.height = 'auto';
-  isLoading = true;
-  document.getElementById('send-btn').disabled = true;
-  document.getElementById('suggested-prompts').style.display = 'none';
+async function loadBrief(){
+  document.getElementById('brief-content').innerHTML='<div class="brief-loading"><span class="spin">⟳</span> Fetching today\'s signal...</div>';
+  briefLoaded=false;
+  const dateStr=new Date().toLocaleDateString('en-US',{weekday:'long',year:'numeric',month:'long',day:'numeric'});
 
-  addMessage('user', text);
-  messages.push({ role: 'user', content: text });
-  showTyping();
+  const prompt=`You are the editor of a daily intelligence brief for Guy Gershon — a Principal PMT from Amazon learning to build software and AI products. Today is ${dateStr}.
 
-  try {
-    const response = await fetch('https://api.anthropic.com/v1/messages', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        model: 'claude-sonnet-4-20250514',
-        max_tokens: 1000,
-        system: SYSTEM_PROMPT,
-        messages: messages
+Use web search to find REAL, CURRENT news from the past 7 days. Generate exactly 4 brief cards.
+
+Return ONLY a raw JSON array — no markdown fences, no preamble, no explanation. Just the array:
+[{"tag":"AI","tagClass":"tag-ai","title":"...","body":"..."},{"tag":"TOOLS","tagClass":"tag-tools","title":"...","body":"..."},{"tag":"BUILD","tagClass":"tag-build","title":"...","body":"..."},{"tag":"PM→DEV","tagClass":"tag-pm","title":"...","body":"..."}]
+
+Rules:
+- AI card: most important AI model/research/product release this week (real, sourced)
+- TOOLS card: a new dev tool, framework update, or builder shortcut worth knowing
+- BUILD card: a real example of someone shipping something impressive with AI or a technical pattern worth adopting
+- PM→DEV card: insight connecting product thinking to technical execution — relevant to a PM learning to code
+- Each body: 2-3 sentences max. Dense signal. No hype. No fluff. Bold key terms with <strong> tags.
+- Write for a sharp senior professional.`;
+
+  try{
+    const res=await fetch('https://api.anthropic.com/v1/messages',{
+      method:'POST',
+      headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({
+        model:'claude-sonnet-4-20250514',
+        max_tokens:1000,
+        tools:[{type:'web_search_20250305',name:'web_search'}],
+        messages:[{role:'user',content:prompt}]
       })
     });
-
-    const data = await response.json();
-    removeTyping();
-
-    const reply = data.content?.[0]?.text || "Something went wrong. Try again!";
-    messages.push({ role: 'assistant', content: reply });
-    addMessage('assistant', reply);
-  } catch (err) {
-    removeTyping();
-    addMessage('assistant', 'Hmm, connection issue. Check your internet and try again.');
+    const data=await res.json();
+    const text=data.content.filter(b=>b.type==='text').map(b=>b.text).join('');
+    const s=text.indexOf('['),e=text.lastIndexOf(']')+1;
+    const cards=JSON.parse(text.slice(s,e));
+    document.getElementById('brief-content').innerHTML=cards.map(c=>`
+      <div class="brief-card">
+        <div class="brief-tag ${c.tagClass}">${c.tag}</div>
+        <div class="brief-card-title">${c.title}</div>
+        <div class="brief-card-body">${c.body}</div>
+      </div>`).join('');
+    briefLoaded=true;
+  }catch(e){
+    document.getElementById('brief-content').innerHTML=`
+      <div class="brief-card">
+        <div class="brief-tag tag-ai">NOTE</div>
+        <div class="brief-card-title">Brief unavailable</div>
+        <div class="brief-card-body">Couldn't load today's brief. Check your connection and hit Refresh.</div>
+      </div>`;
   }
-
-  isLoading = false;
-  document.getElementById('send-btn').disabled = false;
 }
+
+// ── CHAT ──────────────────────────────────────────────────────────────
+const SYS=`You are "Builder Coach" — a sharp, direct technical mentor for Guy Gershon, a Principal PMT from Amazon learning to build software.
+
+Background:
+- Amazon Principal PMT: shipped major products, strong in working backwards, metrics, user research, systems thinking
+- Technical level: complete beginner to code, fast learner, highly motivated
+- Goal: become a "power builder" leveraging AI to reduce the technical barrier
+- Already shipped: Builder Coach app on GitHub (guy-gershon) + Vercel deployment
+
+Teaching principles:
+- ALWAYS connect code concepts to PM equivalents ("Git = version history in Google Docs, but for code")
+- Bias toward building over theory. Minimum viable explanation, then do the thing.
+- Peer-level respect. He's a senior professional, not a student.
+- Show working code snippets. Brief explanation after.
+- Flag new AI tools/techniques relevant to his journey proactively.
+- Dense signal. No padding. Occasional dry humor fine.
+
+Use markdown naturally. Code in backticks.`;
+
+let msgs=[];
+let busy=false;
+
+async function sendMsg(){
+  const el=document.getElementById('chat-in');
+  const text=el.value.trim();
+  if(!text||busy)return;
+  el.value='';el.style.height='auto';
+  busy=true;document.getElementById('send-btn').disabled=true;
+  document.getElementById('chips').style.display='none';
+  addMsg('user',text);msgs.push({role:'user',content:text});
+  showTyping();
+  try{
+    const res=await fetch('https://api.anthropic.com/v1/messages',{
+      method:'POST',
+      headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({model:'claude-sonnet-4-20250514',max_tokens:1000,system:SYS,messages:msgs})
+    });
+    const data=await res.json();
+    removeTyping();
+    const reply=data.content?.[0]?.text||'Something went wrong.';
+    msgs.push({role:'assistant',content:reply});
+    addMsg('coach',reply);
+    if(msgs.length%6===0){state.xp+=25;saveState();renderXP();toast('+25 XP — Active learning session');}
+  }catch(e){removeTyping();addMsg('coach','Connection issue. Try again.');}
+  busy=false;document.getElementById('send-btn').disabled=false;
+}
+
+function addMsg(role,text){
+  const area=document.getElementById('chat-area');
+  const d=document.createElement('div');
+  d.className='msg '+role;
+  const av=role==='user'?'<div class="avatar u">GG</div>':'<div class="avatar c">BC</div>';
+  const fmt=text
+    .replace(/```(\w*)\n?([\s\S]*?)```/g,'<pre><code>$2</code></pre>')
+    .replace(/`([^`]+)`/g,'<code>$1</code>')
+    .replace(/\*\*(.*?)\*\*/g,'<strong>$1</strong>')
+    .replace(/\*(.*?)\*/g,'<em>$1</em>')
+    .replace(/\n/g,'<br>');
+  d.innerHTML=av+`<div class="bubble">${fmt}</div>`;
+  area.appendChild(d);area.scrollTop=area.scrollHeight;
+}
+
+function showTyping(){
+  const area=document.getElementById('chat-area');
+  const d=document.createElement('div');
+  d.className='msg coach';d.id='typing';
+  d.innerHTML='<div class="avatar c">BC</div><div class="bubble"><div class="typing-dots"><span></span><span></span><span></span></div></div>';
+  area.appendChild(d);area.scrollTop=area.scrollHeight;
+}
+function removeTyping(){const e=document.getElementById('typing');if(e)e.remove();}
+function useChip(el){document.getElementById('chat-in').value=el.textContent;document.getElementById('chips').style.display='none';sendMsg();}
+function handleKey(e){if(e.key==='Enter'&&!e.shiftKey){e.preventDefault();sendMsg();}}
+function autoResize(el){el.style.height='auto';el.style.height=Math.min(el.scrollHeight,100)+'px';}
+
+// ── TABS ──────────────────────────────────────────────────────────────
+function showTab(tab){
+  document.querySelectorAll('.panel').forEach(p=>p.classList.remove('active'));
+  document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
+  document.querySelectorAll('.nav-item').forEach(n=>n.classList.remove('active'));
+  document.getElementById('panel-'+tab).classList.add('active');
+  const order=['dashboard','brief','chat','curriculum','projects'];
+  const i=order.indexOf(tab);
+  document.querySelectorAll('.tab')[i]?.classList.add('active');
+  document.querySelectorAll('.nav-item')[i]?.classList.add('active');
+  if(tab==='brief'&&!briefLoaded)loadBrief();
+}
+
+// ── INIT ──────────────────────────────────────────────────────────────
+renderXP();renderSkills();renderMilestones();renderCurriculum();
+document.getElementById('date-badge').textContent=new Date().toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'});
+document.getElementById('brief-date').textContent=new Date().toLocaleDateString('en-US',{weekday:'long',year:'numeric',month:'long',day:'numeric'});
 </script>
 </body>
 </html>
