@@ -558,16 +558,16 @@ async function loadBrief(){
 
   const prompt=`You are the editor of a daily intelligence brief for Guy Gershon — a Principal PMT from Amazon learning to build software and AI products. Today is ${dateStr}.
 
-Generate exactly 4 brief cards on AI, dev tools, building with AI, and PM-to-developer insights.
+Use web search to find REAL, CURRENT news from the past 7 days. Generate exactly 4 brief cards.
 
 CRITICAL: Return ONLY a raw JSON array. Start with [ and end with ]. No markdown, no backticks, no explanation before or after.
 
 [{"tag":"AI","tagClass":"tag-ai","title":"your title","body":"your body"},{"tag":"TOOLS","tagClass":"tag-tools","title":"your title","body":"your body"},{"tag":"BUILD","tagClass":"tag-build","title":"your title","body":"your body"},{"tag":"PM->DEV","tagClass":"tag-pm","title":"your title","body":"your body"}]
 
 Rules:
-- AI card: most important recent AI model, research, or product development
-- TOOLS card: a dev tool, framework, or builder shortcut worth knowing
-- BUILD card: an impressive pattern for shipping AI-powered products
+- AI card: most important AI model/research/product release this week (real, sourced)
+- TOOLS card: a new dev tool, framework update, or builder shortcut worth knowing
+- BUILD card: a real example of someone shipping something impressive with AI
 - PM->DEV card: insight connecting product thinking to technical execution for a PM learning to code
 - Each body: 2-3 sentences. Dense signal. No hype. Bold key terms with <strong> tags.`;
 
@@ -578,6 +578,7 @@ Rules:
       body:JSON.stringify({
         model:'claude-sonnet-4-20250514',
         max_tokens:1500,
+        tools:[{type:'web_search_20250305',name:'web_search'}],
         messages:[{role:'user',content:prompt}]
       })
     });
